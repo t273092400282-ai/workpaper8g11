@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ورقة عمل (8) - تحديث بيانات الجدول landmarks</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cairo & Fira Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Tone.js for subtle celebratory sound -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            cairo: ['Cairo', 'sans-serif'],
+            code: ['"Fira Code"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              pink: '#FF6B8B',
+              rose: '#FF8E9E',
+              purple: '#845EC2',
+              violet: '#D65DB1',
+              lavender: '#FBEAFF',
+              darkViolet: '#4D1D66'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(135deg, #FFF5F7 0%, #F5F0FF 50%, #FAF0F6 100%);
+      min-height: 100vh;
+    }
+    .code-font {
+      font-family: 'Fira Code', monospace;
+    }
+    .gradient-header {
+      background: linear-gradient(135deg, #FF6B8B 0%, #D65DB1 50%, #845EC2 100%);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 215, 235, 0.8);
+      box-shadow: 0 10px 25px -5px rgba(214, 93, 177, 0.1), 0 8px 10px -6px rgba(214, 93, 177, 0.05);
+    }
+    .badge-glow {
+      box-shadow: 0 0 15px rgba(255, 107, 139, 0.4);
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white !important;
+      }
+      .glass-card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-gray-800 pb-16 antialiased selection:bg-pink-200">
+
+  <!-- Container -->
+  <div class="max-w-4xl mx-auto px-4 pt-6 sm:px-6">
+
+    <!-- Header Banner -->
+    <header class="gradient-header rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden mb-8 border border-white/20">
+      <div class="absolute -left-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 relative z-10">
+        <div class="flex items-center gap-3">
+          <div class="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/30">
+            <i class="fa-solid fa-database text-yellow-300"></i>
+          </div>
+          <div>
+            <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-bold tracking-wide uppercase text-pink-100 backdrop-blur-sm mb-1">
+              دولة الكويت - وزارة التربية • الصف الحادي عشر
+            </span>
+            <h1 class="text-xl md:text-2xl font-black text-white leading-tight">
+              ورقة عمل (8) : تعديل بيانات الجدول <span class="text-yellow-300 underline underline-offset-4 decoration-pink-300">landmarks</span>
+            </h1>
+          </div>
+        </div>
+        <div class="text-left md:text-right w-full md:w-auto flex justify-between md:flex-col items-end">
+          <span class="text-xs text-pink-100 font-semibold bg-white/10 px-3 py-1.5 rounded-lg border border-white/20">
+            الوحدة الأولى: المعالجة الرقمية
+          </span>
+          <span class="text-xs text-yellow-200 mt-1 font-bold">Kuwait_landmarks.db</span>
+        </div>
+      </div>
+
+      <!-- Student Info Form Inputs -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-white/15 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-white">
+        <div>
+          <label class="block text-xs font-bold text-pink-100 mb-1">
+            <i class="fa-regular fa-user ml-1"></i> اسم المتعلمة:
+          </label>
+          <input type="text" id="studentName" placeholder="اكتبي اسمكِ ثلاثياً..." 
+            class="w-full bg-white text-gray-800 placeholder-gray-400 text-sm font-semibold rounded-xl px-3.5 py-2 outline-none focus:ring-2 focus:ring-yellow-300 shadow-sm transition">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-pink-100 mb-1">
+            <i class="fa-solid fa-graduation-cap ml-1"></i> الصف:
+          </label>
+          <input type="text" id="studentClass" placeholder="مثال: 11 علمي / 1" 
+            class="w-full bg-white text-gray-800 placeholder-gray-400 text-sm font-semibold rounded-xl px-3.5 py-2 outline-none focus:ring-2 focus:ring-yellow-300 shadow-sm transition">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-pink-100 mb-1">
+            <i class="fa-regular fa-calendar ml-1"></i> التاريخ:
+          </label>
+          <input type="date" id="taskDate" 
+            class="w-full bg-white text-gray-800 text-sm font-semibold rounded-xl px-3.5 py-2 outline-none focus:ring-2 focus:ring-yellow-300 shadow-sm transition">
+        </div>
+      </div>
+    </header>
+
+    <!-- Schema & Table Overview Card -->
+    <section class="glass-card rounded-2xl p-6 mb-8 transition hover:shadow-lg">
+      <div class="flex items-center justify-between mb-4 border-b border-pink-100 pb-3">
+        <h2 class="text-lg font-bold text-purple-900 flex items-center gap-2">
+          <i class="fa-solid fa-table-cells text-pink-500"></i>
+          مخطط وهيكلية جدول معالم الكويت (<span class="code-font text-purple-700 font-semibold">landmarks</span>)
+        </h2>
+        <span class="text-xs bg-purple-100 text-purple-700 font-bold px-3 py-1 rounded-full">
+          الهدف: تعديل سعر تذكرة أبراج الكويت (id = 1) إلى 2 د.ك
+        </span>
+      </div>
+
+      <p class="text-sm text-gray-600 mb-4 leading-relaxed">
+        تحتوي قاعدة البيانات <strong class="text-purple-800">Kuwait_landmarks.db</strong> على جدول باسم <strong class="text-pink-600">landmarks</strong>. المطلوب هو تحديث حقل سعر التذكرة (<span class="code-font bg-pink-50 px-1.5 py-0.5 rounded text-pink-700">price</span>) ليصبح <strong>2</strong> للمعلم الذي يحمل المعرف (<span class="code-font bg-purple-50 px-1.5 py-0.5 rounded text-purple-700">id = 1</span>).
+      </p>
+
+      <!-- Table View Preview (Left to Right / LTR) -->
+      <div class="overflow-x-auto rounded-xl border border-pink-100 shadow-sm bg-white" dir="ltr">
+        <table class="w-full text-left text-xs sm:text-sm">
+          <thead class="bg-gradient-to-r from-purple-50 to-pink-50 text-purple-900 border-b border-pink-100 font-bold">
+            <tr>
+              <th class="p-3 text-center w-14">
+                id <i class="fa-solid fa-key text-yellow-500 text-xs ml-1"></i>
+              </th>
+              <th class="p-3">name</th>
+              <th class="p-3">location</th>
+              <th class="p-3">category</th>
+              <th class="p-3 text-center">year</th>
+              <th class="p-3 text-center bg-yellow-100/70 text-purple-950 font-black">price (KWD)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 font-sans">
+            <tr class="bg-pink-50/40 hover:bg-pink-100/50 transition" id="rowTarget">
+              <td class="p-3 text-center font-bold text-purple-700">1</td>
+              <td class="p-3 font-bold text-pink-900 flex items-center gap-1.5">
+                <i class="fa-solid fa-monument text-pink-500"></i> Kuwait Towers (أبراج الكويت)
+              </td>
+              <td class="p-3 text-gray-600">Kuwait City - Arabian Gulf St.</td>
+              <td class="p-3 text-gray-600">
+                <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-semibold">Tourism</span>
+              </td>
+              <td class="p-3 text-center font-mono">1979</td>
+              <td class="p-3 text-center font-bold" id="landmarkPriceCell">
+                <span class="inline-block px-2.5 py-1 bg-rose-100 text-rose-800 rounded-md font-mono" id="currentPriceTag">0.00</span>
+                <span class="text-xs text-rose-500 block font-normal mt-0.5">(القيمة الحالية)</span>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50 text-gray-500">
+              <td class="p-3 text-center font-bold">2</td>
+              <td class="p-3">Scientific Center (المركز العلمي)</td>
+              <td class="p-3">Salmiya</td>
+              <td class="p-3">
+                <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs font-semibold">Culture & Science</span>
+              </td>
+              <td class="p-3 text-center font-mono">2000</td>
+              <td class="p-3 text-center font-mono">3.00</td>
+            </tr>
+            <tr class="hover:bg-gray-50 text-gray-500">
+              <td class="p-3 text-center font-bold">3</td>
+              <td class="p-3">Souq Al-Mubarakiya (سوق المباركية)</td>
+              <td class="p-3">Al-Qibla - Capital</td>
+              <td class="p-3">
+                <span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-xs font-semibold">Heritage</span>
+              </td>
+              <td class="p-3 text-center font-mono">1897</td>
+              <td class="p-3 text-center font-mono">0.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Activity Section 1: Code Completion Simulator -->
+    <section class="glass-card rounded-2xl p-6 mb-8 border-r-4 border-r-pink-500">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <span class="text-xs font-bold text-pink-600 uppercase tracking-wider block">التحدي البرمجي التفاعلي</span>
+          <h2 class="text-lg font-bold text-purple-900">
+            أولاً: أكملي أمر الـ SQL وبايثون لتحديث بيانات السعر
+          </h2>
+        </div>
+        <span class="px-3 py-1 bg-pink-100 text-pink-700 text-xs font-bold rounded-full">
+          <i class="fa-solid fa-code ml-1"></i> Python & SQLite
+        </span>
+      </div>
+
+      <p class="text-sm text-gray-600 mb-4 leading-relaxed">
+        اكتبي الكلمات البرمجية المناسبة داخل الفراغات التالية لجعل البرنامج يقوم بتعديل سعر الدخول إلى 
+        <strong class="text-pink-600 font-bold">2</strong> دينار، للمعلم الذي يحمل المعرف رقم 
+        <strong class="text-purple-600 font-bold">1</strong>:
+      </p>
+
+      <!-- Python Code Block with Interactive Blanks -->
+      <div class="bg-[#1e1e2e] text-pink-100 p-5 rounded-2xl shadow-xl code-font text-xs sm:text-sm overflow-x-auto border border-purple-900/50">
+        <div class="text-gray-400 mb-3 select-none flex items-center justify-between border-b border-gray-700/60 pb-2">
+          <span class="flex items-center gap-1.5 text-xs text-pink-300">
+            <span class="w-3 h-3 rounded-full bg-red-400 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-green-400 inline-block"></span>
+            <span class="mr-2">update_landmark.py</span>
+          </span>
+          <span class="text-gray-500 text-xs">Python 3.10</span>
+        </div>
+
+        <div class="leading-relaxed space-y-2 select-text" dir="ltr">
+          <p><span class="text-purple-400">import</span> sqlite3</p>
+          <p><span class="text-gray-400"># فتح قناة الاتصال بقاعدة بيانات معالم الكويت</span></p>
+          <p>con = sqlite3.connect(<span class="text-emerald-300">'Kuwait_landmarks.db'</span>)</p>
+          <p>cursor = con.cursor()</p>
+          
+          <div class="my-3 p-3 bg-white/5 rounded-xl border border-pink-500/30 flex flex-wrap items-center gap-2">
+            <span class="text-gray-400 select-none">1 |</span>
+            <span class="text-purple-300">cursor</span>.<span class="text-blue-300">execute</span>(<span class="text-emerald-300">"</span>
+            
+            <!-- Blank 1: UPDATE command -->
+            <input type="text" id="blank1" placeholder="أمر التعديل" 
+              class="w-24 text-center py-1 px-2 rounded-lg bg-pink-950/80 text-yellow-300 font-bold border border-pink-400/60 focus:ring-2 focus:ring-yellow-300 outline-none uppercase transition text-xs">
+            
+            <span class="text-pink-300">landmarks</span> 
+            <span class="text-purple-400 font-bold">SET</span> 
+            
+            <!-- Blank 2: column name price -->
+            <input type="text" id="blank2" placeholder="اسم الحقل" 
+              class="w-20 text-center py-1 px-2 rounded-lg bg-pink-950/80 text-yellow-300 font-bold border border-pink-400/60 focus:ring-2 focus:ring-yellow-300 outline-none lowercase transition text-xs">
+            
+            <span class="text-white">= ?</span> 
+            <span class="text-purple-400 font-bold">WHERE</span> 
+            <span class="text-white">id = ?"</span>, (
+            
+            <!-- Blank 3: new value (2) -->
+            <input type="text" id="blank3" placeholder="القيمة" 
+              class="w-16 text-center py-1 px-2 rounded-lg bg-pink-950/80 text-yellow-300 font-bold border border-pink-400/60 focus:ring-2 focus:ring-yellow-300 outline-none transition text-xs">
+            ,
+            <!-- Blank 4: target ID (1) -->
+            <input type="text" id="blank4" placeholder="المعرف" 
+              class="w-16 text-center py-1 px-2 rounded-lg bg-pink-950/80 text-yellow-300 font-bold border border-pink-400/60 focus:ring-2 focus:ring-yellow-300 outline-none transition text-xs">
+            ))
+          </div>
+
+          <p class="text-gray-400"># حفظ التغييرات نهائياً وإغلاق الاتصال</p>
+          <p><span class="text-purple-300">con</span>.<span class="text-blue-300">commit</span>()</p>
+          <p><span class="text-purple-300">print</span>(<span class="text-emerald-300">"Number of rows updated:"</span>, cursor.rowcount)</p>
+          <p><span class="text-purple-300">con</span>.<span class="text-blue-300">close</span>()</p>
+        </div>
+      </div>
+
+      <!-- Action Verification Buttons -->
+      <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="text-xs text-gray-500 flex items-center gap-1.5">
+          <i class="fa-solid fa-lightbulb text-yellow-500"></i>
+          <span>تلميح: أمر SQL لتعديل السجلات هو <code class="text-pink-600 font-bold">UPDATE</code>، وقيمة السعر الجديدة 2، وid = 1.</span>
+        </div>
+        <button onclick="checkCodeBlanks()" 
+          class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition transform active:scale-95 flex items-center gap-2 text-sm">
+          <i class="fa-solid fa-circle-check"></i> التحقق من صحة الكود البرمجي
+        </button>
+      </div>
+
+      <!-- Live Feedback Message for Code -->
+      <div id="codeFeedback" class="mt-3 hidden p-3 rounded-xl text-sm font-semibold flex items-center gap-2"></div>
+    </section>
+
+    <!-- Activity Section 2: Run Simulator -->
+    <section class="glass-card rounded-2xl p-6 mb-8 border-r-4 border-r-purple-600">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <span class="text-xs font-bold text-purple-600 uppercase tracking-wider block">المحاكي التفاعلي المباشر</span>
+          <h2 class="text-lg font-bold text-purple-900">
+            ثانياً: محاكي تشغيل البرنامج (Run Simulator)
+          </h2>
+        </div>
+        <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">
+          <i class="fa-solid fa-terminal ml-1"></i> مخرجات التنفيذ
+        </span>
+      </div>
+
+      <p class="text-sm text-gray-600 mb-4">
+        اضغطي زر <strong class="text-purple-700">"تشغيل البرنامج (Run)"</strong> لتنفيذ الكود، وتحديث الجدول تلقائياً في الأعلى، ومعاينة النتيجة التي يطبعها محث الأوامر (Terminal):
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 items-stretch">
+        <!-- Run Button and Controls -->
+        <div class="flex flex-col justify-center sm:w-1/3">
+          <button id="runBtn" onclick="runSimulator()" 
+            class="h-full min-h-[56px] bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black py-3 px-6 rounded-2xl shadow-lg transition transform active:scale-95 flex flex-col items-center justify-center gap-1 group">
+            <span class="flex items-center gap-2 text-base">
+              <i class="fa-solid fa-play group-hover:scale-110 transition"></i> تشغيل الكود (Run)
+            </span>
+            <span class="text-[11px] font-normal text-emerald-100">تنفيذ استعلام UPDATE</span>
+          </button>
+        </div>
+
+        <!-- Simulated Terminal Output Window -->
+        <div class="flex-1 bg-[#181825] text-green-400 p-4 rounded-2xl code-font text-xs sm:text-sm border border-gray-700 relative min-h-[90px] flex flex-col justify-between">
+          <div class="flex items-center justify-between text-gray-500 border-b border-gray-800 pb-1 mb-2 text-xs">
+            <span class="text-gray-400"><i class="fa-solid fa-terminal text-[10px] ml-1"></i> Terminal Console Output</span>
+            <span id="terminalStatus" class="text-yellow-400">جاهز للتنفيذ...</span>
+          </div>
+          <div id="terminalBody" class="text-gray-400 italic">
+            > اضغطي على زر "تشغيل الكود" لمعاينة تنفيذ أمر التعديل وطباعة النتيجة...
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity Section 3: Concept Reinforcement Questions -->
+    <section class="glass-card rounded-2xl p-6 mb-8 border-r-4 border-r-pink-400">
+      <div class="mb-5 border-b border-pink-100 pb-2">
+        <span class="text-xs font-bold text-pink-600 uppercase tracking-wider block">تقويم المفاهيم النظرية والتطبيقية</span>
+        <h2 class="text-lg font-bold text-purple-900">
+          ثالثاً: أسئلة تثبيت المهارات (اختاري الإجابة الصحيحة)
+        </h2>
+      </div>
+
+      <!-- Question 1 -->
+      <div class="mb-6 p-4 rounded-xl bg-pink-50/50 border border-pink-100">
+        <p class="font-bold text-sm text-purple-950 mb-3 flex items-start gap-2">
+          <span class="bg-pink-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0 mt-0.5 font-bold">1</span>
+          ما هو الأمر المستخدم في بايثون لحفظ التغييرات والتعديلات نهائياً في ملف قاعدة البيانات SQLite؟
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm">
+          <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 cursor-pointer hover:border-pink-400 hover:bg-pink-50/30 transition">
+            <input type="radio" name="q1" value="save" class="accent-pink-500 w-4 h-4">
+            <span class="font-mono text-purple-900 font-bold">con.save()</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 cursor-pointer hover:border-pink-400 hover:bg-pink-50/30 transition">
+            <input type="radio" name="q1" value="commit" class="accent-pink-500 w-4 h-4">
+            <span class="font-mono text-purple-900 font-bold">con.commit()</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 cursor-pointer hover:border-pink-400 hover:bg-pink-50/30 transition">
+            <input type="radio" name="q1" value="update" class="accent-pink-500 w-4 h-4">
+            <span class="font-mono text-purple-900 font-bold">con.update()</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 cursor-pointer hover:border-pink-400 hover:bg-pink-50/30 transition">
+            <input type="radio" name="q1" value="apply" class="accent-pink-500 w-4 h-4">
+            <span class="font-mono text-purple-900 font-bold">con.apply()</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Question 2 -->
+      <div class="p-4 rounded-xl bg-purple-50/50 border border-purple-100">
+        <p class="font-bold text-sm text-purple-950 mb-3 flex items-start gap-2">
+          <span class="bg-purple-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0 mt-0.5 font-bold">2</span>
+          بعد الانتهاء من العمليات والتعديلات على قاعدة البيانات، يُنصح دائماً بإغلاق الاتصال عبر استدعاء:
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm">
+          <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 cursor-pointer hover:border-purple-400 hover:bg-purple-50/30 transition">
+            <input type="radio" name="q2" value="exit" class="accent-purple-600 w-4 h-4">
+            <span class="font-mono text-purple-900 font-bold">con.exit()</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 cursor-pointer hover:border-purple-400 hover:bg-purple-50/30 transition">
+            <input type="radio" name="q2" value="close" class="accent-purple-600 w-4 h-4">
+            <span class="font-mono text-purple-900 font-bold">con.close()</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 cursor-pointer hover:border-purple-400 hover:bg-purple-50/30 transition">
+            <input type="radio" name="q2" value="end" class="accent-purple-600 w-4 h-4">
+            <span class="font-mono text-purple-900 font-bold">con.end()</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 cursor-pointer hover:border-purple-400 hover:bg-purple-50/30 transition">
+            <input type="radio" name="q2" value="finish" class="accent-purple-600 w-4 h-4">
+            <span class="font-mono text-purple-900 font-bold">con.finish()</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Score & Completion Card -->
+    <section class="glass-card rounded-3xl p-6 sm:p-8 text-center relative overflow-hidden mb-10 border-2 border-pink-200">
+      <div class="max-w-md mx-auto">
+        <div class="w-16 h-16 bg-gradient-to-tr from-pink-400 to-purple-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg badge-glow text-2xl">
+          <i class="fa-solid fa-award"></i>
+        </div>
+        <h3 class="text-xl font-black text-purple-950 mb-1">تقييم ورقة العمل والإنجاز</h3>
+        <p class="text-xs text-gray-500 mb-6">احرصي على حل جميع الأجزاء، ثم اضغطي على زر التقييم لمعرفة درجتكِ المستحقة</p>
+
+        <!-- Final Score Display -->
+        <div class="bg-gradient-to-r from-pink-50 via-purple-50 to-pink-50 p-4 rounded-2xl border border-pink-200/80 mb-6">
+          <div class="text-sm font-bold text-gray-700 mb-1">الدرجة النهائية المستحقة:</div>
+          <div class="text-4xl font-black text-purple-800 flex items-center justify-center gap-1">
+            <span id="finalScore">--</span>
+            <span class="text-lg text-gray-400 font-normal">/ 10</span>
+          </div>
+          <div id="motivationMessage" class="text-xs sm:text-sm font-bold text-pink-600 mt-2">
+            بانتظار تقييم إجاباتكِ المتميزة يا مهندسة المستقبل! 🌟
+          </div>
+        </div>
+
+        <!-- Evaluation and Print Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <button onclick="calculateFinalScore()" 
+            class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-xl shadow-md transition transform active:scale-95 flex items-center justify-center gap-2 text-sm">
+            <i class="fa-solid fa-star text-yellow-300"></i> تقييم ورقة العمل الآن
+          </button>
+          
+          <button onclick="window.print()" 
+            class="no-print bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 font-bold py-3 px-6 rounded-xl shadow-sm transition flex items-center justify-center gap-2 text-sm">
+            <i class="fa-solid fa-print text-pink-500"></i> طباعة / حفظ كـ PDF
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-gray-500 pb-8">
+      <p class="font-bold text-purple-900 mb-1">إعداد وتصميم الأنشطة التفاعلية لمناهج الحاسوب وتكنولوجيا المعلومات - دولة الكويت 🇰🇼</p>
+      <p>مع تمنياتنا لجميع متعلماتنا في الصف الحادي عشر بدوام التميز والإبداع التقني ✨</p>
+    </footer>
+
+  </div>
+
+  <!-- Custom Alert / Notification Modal Box -->
+  <div id="modalBox" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl transform transition border border-pink-100">
+      <div id="modalIcon" class="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-2xl mb-3 shadow-inner"></div>
+      <h4 id="modalTitle" class="text-lg font-black text-gray-800 mb-2"></h4>
+      <p id="modalDesc" class="text-xs text-gray-600 mb-5 leading-relaxed"></p>
+      <button onclick="closeModal()" class="w-full py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-xl shadow text-sm">
+        حسناً، فهمت
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript Interaction Logic -->
+  <script>
+    // Initialize today's date in input
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      const dateEl = document.getElementById('taskDate');
+      if (dateEl) dateEl.value = today;
+    });
+
+    // Sound effect helper using Tone.js
+    function playCelebrationSound() {
+      try {
+        const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+        synth.volume.value = -6;
+        const now = Tone.now();
+        synth.triggerAttackRelease("C5", "8n", now);
+        synth.triggerAttackRelease("E5", "8n", now + 0.1);
+        synth.triggerAttackRelease("G5", "8n", now + 0.2);
+        synth.triggerAttackRelease("C6", "4n", now + 0.3);
+      } catch (e) {
+        console.log("Audio autostart restriction handled.");
+      }
+    }
+
+    // Modal Helper Function (No alerts)
+    function showModal(title, desc, isSuccess = true) {
+      const modal = document.getElementById('modalBox');
+      const titleEl = document.getElementById('modalTitle');
+      const descEl = document.getElementById('modalDesc');
+      const iconEl = document.getElementById('modalIcon');
+
+      titleEl.innerText = title;
+      descEl.innerText = desc;
+
+      if (isSuccess) {
+        iconEl.className = "w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-2xl mb-3 bg-pink-100 text-pink-600";
+        iconEl.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i>';
+      } else {
+        iconEl.className = "w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-2xl mb-3 bg-amber-100 text-amber-600";
+        iconEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modalBox').classList.add('hidden');
+    }
+
+    // State Tracking
+    let isCodeCorrect = false;
+    let isSimulatorRun = false;
+
+    // 1. Verify Code Blanks
+    function checkCodeBlanks() {
+      const b1 = document.getElementById('blank1').value.trim().toUpperCase();
+      const b2 = document.getElementById('blank2').value.trim().toLowerCase();
+      const b3 = document.getElementById('blank3').value.trim();
+      const b4 = document.getElementById('blank4').value.trim();
+      const feedback = document.getElementById('codeFeedback');
+
+      // Validation
+      const isB1Valid = (b1 === 'UPDATE');
+      const isB2Valid = (b2 === 'price');
+      const isB3Valid = (b3 === '2');
+      const isB4Valid = (b4 === '1');
+
+      feedback.classList.remove('hidden');
+
+      if (isB1Valid && isB2Valid && isB3Valid && isB4Valid) {
+        isCodeCorrect = true;
+        feedback.className = "mt-3 p-3 rounded-xl text-sm font-semibold flex items-center gap-2 bg-emerald-100 text-emerald-800 border border-emerald-200";
+        feedback.innerHTML = '<i class="fa-solid fa-check-circle text-emerald-600 text-base"></i> إجابة نموذجية ورائعة! قمتِ بصياغة أمر التعديل UPDATE وتحديد الحقل price والمعاملات (2, 1) بدقة ممتازة.';
+        
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+        playCelebrationSound();
+      } else {
+        isCodeCorrect = false;
+        feedback.className = "mt-3 p-3 rounded-xl text-sm font-semibold flex items-center gap-2 bg-rose-100 text-rose-800 border border-rose-200";
+        
+        let errors = [];
+        if (!isB1Valid) errors.push("أمر التعديل هو UPDATE");
+        if (!isB2Valid) errors.push("اسم الحقل المراد تعديله هو price");
+        if (!isB3Valid) errors.push("القيمة الجديدة للسعر هي 2");
+        if (!isB4Valid) errors.push("معرف السجل المستهدف هو 1");
+
+        feedback.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-600 text-base"></i> راجعي ما يلي: (${errors.join(' ، ')}).`;
+      }
+    }
+
+    // 2. Run Simulator
+    function runSimulator() {
+      const terminalStatus = document.getElementById('terminalStatus');
+      const terminalBody = document.getElementById('terminalBody');
+      const priceTag = document.getElementById('currentPriceTag');
+      const rowTarget = document.getElementById('rowTarget');
+
+      terminalStatus.innerText = "جاري تنفيذ الاستعلام...";
+      terminalStatus.className = "text-yellow-400 animate-pulse";
+
+      setTimeout(() => {
+        // Output in Terminal
+        terminalBody.innerHTML = `
+          <div class="space-y-1 font-mono text-xs sm:text-sm">
+            <p class="text-purple-300">$ python update_landmark.py</p>
+            <p class="text-emerald-400 font-bold">> Connected successfully to Kuwait_landmarks.db</p>
+            <p class="text-white">> Executing: UPDATE landmarks SET price=2 WHERE id=1</p>
+            <p class="text-cyan-300 font-bold text-sm">> Number of rows updated: 1</p>
+            <p class="text-gray-400">> Changes committed & Connection closed successfully.</p>
+          </div>
+        `;
+        terminalStatus.innerText = "اكتمل بنجاح (Exit Code: 0)";
+        terminalStatus.className = "text-emerald-400 font-bold";
+
+        // Update UI Table in Overview
+        priceTag.innerText = "2.00 د.ك";
+        priceTag.className = "inline-block px-3 py-1 bg-emerald-500 text-white rounded-md font-mono font-black shadow-md scale-110 transition";
+        rowTarget.classList.add('bg-emerald-50');
+
+        isSimulatorRun = true;
+
+        showModal(
+          "تم تعديل البيانات بنجاح!", 
+          "رائع جداً! تم تنفيذ كود التعديل بنجاح، وتغير سعر تذكرة أبراج الكويت في الجدول إلى 2 د.ك، وسجل البرنامج: (Number of rows updated: 1).",
+          true
+        );
+
+        confetti({
+          particleCount: 70,
+          spread: 70,
+          origin: { y: 0.55 }
+        });
+      }, 700);
+    }
+
+    // 3. Final Evaluation & Scoring
+    function calculateFinalScore() {
+      const studentName = document.getElementById('studentName').value.trim();
+      if (!studentName) {
+        showModal("تنبيه لطيف", "يرجى كتابة اسمكِ في ترويسة ورقة العمل قبل التقييم 🌸", false);
+        return;
+      }
+
+      let score = 0;
+
+      // Check Python code blanks (4 marks)
+      const b1 = document.getElementById('blank1').value.trim().toUpperCase();
+      const b2 = document.getElementById('blank2').value.trim().toLowerCase();
+      const b3 = document.getElementById('blank3').value.trim();
+      const b4 = document.getElementById('blank4').value.trim();
+      if (b1 === 'UPDATE') score += 1;
+      if (b2 === 'price') score += 1;
+      if (b3 === '2') score += 1;
+      if (b4 === '1') score += 1;
+
+      // Check Simulator execution (2 marks)
+      if (isSimulatorRun) {
+        score += 2;
+      }
+
+      // Check Questions (2 marks each = 4 marks)
+      const q1Selected = document.querySelector('input[name="q1"]:checked');
+      if (q1Selected && q1Selected.value === 'commit') {
+        score += 2;
+      }
+
+      const q2Selected = document.querySelector('input[name="q2"]:checked');
+      if (q2Selected && q2Selected.value === 'close') {
+        score += 2;
+      }
+
+      // Display Final Score
+      const finalScoreEl = document.getElementById('finalScore');
+      finalScoreEl.innerText = score;
+
+      const motivationEl = document.getElementById('motivationMessage');
+
+      if (score >= 9) {
+        motivationEl.innerHTML = `عاشقة الإبداع المبرمجة <strong class="text-purple-800">${studentName}</strong>: إجابة نموذجية ودرجة كاملة، بارك الله في تميزكِ! 🌟🏆`;
+        confetti({
+          particleCount: 120,
+          spread: 100,
+          origin: { y: 0.6 }
+        });
+        playCelebrationSound();
+      } else if (score >= 6) {
+        motivationEl.innerHTML = `أحسنتِ المحاولة يا <strong class="text-purple-800">${studentName}</strong>! لقد أحرزتِ نتيجة جيدة جداً، راجعي النقاط غير المكتملة للحصول على الدرجة الكاملة! 👏✨`;
+      } else {
+        motivationEl.innerHTML = `عزيزتي <strong class="text-purple-800">${studentName}</strong>، تأكدي من إكمال جميع فراغات الكود، وتشغيل المحاكي، والإجابة على الأسئلة لتحقيق 10/10! 🌸💪`;
+      }
+
+      // Scroll smoothly to score box
+      finalScoreEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  </script>
+</body>
+</html>
